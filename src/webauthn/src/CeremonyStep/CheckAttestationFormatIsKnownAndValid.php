@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Webauthn\CeremonyStep;
 
+use function in_array;
+use function sprintf;
 use function trigger_deprecation;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -46,6 +48,18 @@ final readonly class CheckAttestationFormatIsKnownAndValid implements CeremonySt
         $this->attestationStatementSupportManager->has(
             $fmt
         ) || throw AuthenticatorResponseVerificationException::create('Unsupported attestation statement format.');
+
+        // WebAuthn L3 §5.4 / §5.5: when the relying party advertised a list of
+        // preferred attestation formats, the format actually emitted by the
+        // authenticator MUST be one of them. An empty list keeps the historical
+        // behaviour (any supported format is accepted).
+        $requestedFormats = $publicKeyCredentialOptions->attestationFormats;
+        if ($requestedFormats !== [] && ! in_array($fmt, $requestedFormats, true)) {
+            throw AuthenticatorResponseVerificationException::create(sprintf(
+                'The attestation statement format "%s" is not in the list requested by the relying party.',
+                $fmt,
+            ));
+        }
 
         $attestationStatementSupport = $this->attestationStatementSupportManager->get($fmt);
         $clientDataJSONHash = hash('sha256', $authenticatorResponse->clientDataJSON->rawData, true);

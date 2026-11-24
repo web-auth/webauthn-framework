@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\DependencyInjection;
 
 use function array_key_exists;
+use function class_exists;
 use Cose\Algorithm\Algorithm;
 use function count;
+use Doctrine\Bundle\DoctrineBundle\DependencyInjection\Compiler\DoctrineOrmMappingsPass;
 use function is_array;
 use function sprintf;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -40,6 +42,7 @@ use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\EventDispatcherSetterCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\LoggerSetterCompilerPass;
+use Webauthn\Bundle\Doctrine\DeprecatedMappingListener;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\Bundle\Policy\ClientOverridePolicy;
 use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
@@ -58,6 +61,7 @@ use Webauthn\MetadataService\CanLogData;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
+use Webauthn\Util\PublicSuffixResolver;
 
 final class WebauthnExtension extends Extension implements PrependExtensionInterface
 {
@@ -74,7 +78,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     public function load(array $configs, ContainerBuilder $container): void
     {
         $processor = new Processor();
-        /** @var array{options_storage: string, secured_rp_ids: array<string>, allowed_origins: array<string>, allow_subdomains: bool, event_dispatcher: string, clock: string, top_origin_validator: string|null, http_client: string, logger: string, fake_credential_generator: string, credential_repository: string, user_repository: string, counter_checker: string, metadata: array{enabled: bool, mds_repository: string, status_report_repository: string, certificate_chain_checker: string, tpm_acknowledge_insecure_algorithm: bool}, controllers: array{enabled: bool, creation?: array<string, array{options_builder: string|null, profile: string, user_entity_guesser: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, hide_existing_credentials: bool, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}>, request?: array<string, array{options_builder: string|null, profile: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}>}, creation_profiles: array<string, mixed>, request_profiles: array<string, mixed>, client_override_policy: array<string, mixed>, passkey_endpoints: array{enabled: bool, enroll: string|array<string, mixed>|null, manage: string|array<string, mixed>|null, prf_usage_details: string|array<string, mixed>|null}} $config */
+        /** @var array{options_storage: string, secured_rp_ids: array<string>, allowed_origins: array<string>, allow_subdomains: bool, ceremony_origin_pinning: bool, related_origins: array{public_suffix_resolver: string|null, label_limit_check: bool}, event_dispatcher: string, clock: string, top_origin_validator: string|null, http_client: string, logger: string, fake_credential_generator: string, credential_repository: string, user_repository: string, counter_checker: string, metadata: array{enabled: bool, mds_repository: string, status_report_repository: string, certificate_chain_checker: string, require_statement: bool, tpm_acknowledge_insecure_algorithm: bool, enterprise_attestation_trust_anchors: array<string>}, controllers: array{enabled: bool, creation?: array<string, array{options_builder: string|null, profile: string, user_entity_guesser: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, hide_existing_credentials: bool, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}>, request?: array<string, array{options_builder: string|null, profile: string, options_storage: string|null, options_handler: string, failure_handler: string, success_handler: string, options_method: string, options_path: string, result_method: string, result_path: string|null, host: string|null, secured_rp_ids: array<string>}>}, creation_profiles: array<string, mixed>, request_profiles: array<string, mixed>, client_override_policy: array<string, mixed>, passkey_endpoints: array{enabled: bool, enroll: string|array<string, mixed>|null, manage: string|array<string, mixed>|null, prf_usage_details: string|array<string, mixed>|null}} $config */
         $config = $processor->processConfiguration($this->getConfiguration($configs, $container), $configs);
 
         $container->registerForAutoconfiguration(AttestationStatementSupport::class)->addTag(
@@ -94,6 +98,14 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setParameter('webauthn.secured_relying_party_ids', $config['secured_rp_ids']);
         $container->setParameter('webauthn.allowed_origins', $config['allowed_origins']);
         $container->setParameter('webauthn.allow_subdomains', $config['allow_subdomains']);
+        $container->setParameter('webauthn.ceremony_origin_pinning', $config['ceremony_origin_pinning']);
+        $container->setParameter(
+            'webauthn.related_origins.label_limit_check',
+            $config['related_origins']['label_limit_check']
+        );
+        if ($config['related_origins']['public_suffix_resolver'] !== null) {
+            $container->setAlias(PublicSuffixResolver::class, $config['related_origins']['public_suffix_resolver']);
+        }
         $container->setAlias('webauthn.event_dispatcher', $config['event_dispatcher']);
         $container->setAlias('webauthn.clock', $config['clock']);
         if ($config['top_origin_validator'] !== null) {
@@ -124,6 +136,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $loader->load('services.php');
         $loader->load('cose.php');
         $loader->load('security.php');
+        $this->loadDoctrineMappingDeprecation($container);
 
         if ($container->hasParameter('kernel.debug') && $container->getParameter('kernel.debug') === true) {
             $loader->load('dev_services.php');
@@ -249,8 +262,11 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $container
                 ->setDefinition($creationCeremonyStepManagerId, new Definition(CeremonyStepManager::class))
                 ->setFactory([new Reference(CeremonyStepManagerFactory::class), $ceremonyFactoryMethod])
-                // @deprecated Will be removed in 6.0.0
-                ->setArguments([$creationConfig['secured_rp_ids']])
+                ->setArguments(self::resolveOriginOverrideArgs(
+                    $creationConfig['allowed_origins'] ?? [],
+                    $creationConfig['allow_subdomains'] ?? false,
+                    $creationConfig['secured_rp_ids'] ?? [],
+                ))
             ;
 
             $attestationResponseValidatorId = sprintf(
@@ -336,8 +352,11 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
             $container
                 ->setDefinition($requestCeremonyStepManagerId, new Definition(CeremonyStepManager::class))
                 ->setFactory([new Reference(CeremonyStepManagerFactory::class), 'requestCeremony'])
-                // @deprecated Will be removed in 6.0.0
-                ->setArguments([$requestConfig['secured_rp_ids']])
+                ->setArguments(self::resolveOriginOverrideArgs(
+                    $requestConfig['allowed_origins'] ?? [],
+                    $requestConfig['allow_subdomains'] ?? false,
+                    $requestConfig['secured_rp_ids'] ?? [],
+                ))
             ;
 
             $assertionResponseValidatorId = sprintf(
@@ -375,7 +394,22 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
     }
 
     /**
-     * @param array{enabled: bool, mds_repository: string, status_report_repository: string, certificate_chain_checker: string, tpm_acknowledge_insecure_algorithm: bool} $config
+     * The listener is registered under the condition the bundle uses to register its Doctrine mapping, so that the
+     * deprecation is only reported when that mapping exists.
+     */
+    private function loadDoctrineMappingDeprecation(ContainerBuilder $container): void
+    {
+        if (! class_exists(DoctrineOrmMappingsPass::class)) {
+            return;
+        }
+        $container->register(DeprecatedMappingListener::class, DeprecatedMappingListener::class)
+            ->addTag('doctrine.event_listener', [
+                'event' => 'loadClassMetadata',
+            ]);
+    }
+
+    /**
+     * @param array{enabled: bool, mds_repository: string, status_report_repository: string, certificate_chain_checker: string, require_statement: bool, tpm_acknowledge_insecure_algorithm: bool, enterprise_attestation_trust_anchors: array<string>} $config
      */
     private function loadMetadataServices(ContainerBuilder $container, FileLoader $loader, array $config): void
     {
@@ -385,9 +419,14 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setAlias(MetadataStatementRepository::class, $config['mds_repository']);
         $container->setAlias(StatusReportRepository::class, $config['status_report_repository']);
         $container->setAlias(CertificateChainValidator::class, $config['certificate_chain_checker']);
+        $container->setParameter('webauthn.metadata.require_statement', $config['require_statement']);
         $container->setParameter(
             'webauthn.metadata.tpm_acknowledge_insecure_algorithm',
             $config['tpm_acknowledge_insecure_algorithm']
+        );
+        $container->setParameter(
+            'webauthn.metadata.enterprise_attestation_trust_anchors',
+            $config['enterprise_attestation_trust_anchors']
         );
         $loader->load('metadata_statement_supports.php');
     }
@@ -401,5 +440,37 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         $container->setParameter('webauthn.passkey_endpoints.enroll', $config['enroll'] ?? null);
         $container->setParameter('webauthn.passkey_endpoints.manage', $config['manage'] ?? null);
         $container->setParameter('webauthn.passkey_endpoints.prf_usage_details', $config['prf_usage_details'] ?? null);
+    }
+
+    /**
+     * Build the `[allowed_origins, allow_subdomains]` argument list passed to
+     * {@see \Webauthn\CeremonyStep\CeremonyStepManagerFactory::creationCeremony()}
+     * /
+     * {@see \Webauthn\CeremonyStep\CeremonyStepManagerFactory::requestCeremony()}
+     * for a per-controller ceremony step manager. Returns `[null, false]` to
+     * fall back to whatever was set globally on the factory.
+     *
+     * `secured_rp_ids` (deprecated) is honoured as a backwards-compatible alias
+     * when `allowed_origins` is empty.
+     *
+     * @param array<string> $allowedOrigins
+     * @param array<string> $securedRpIds
+     *
+     * @return array{0: ?array<string>, 1: bool}
+     */
+    private static function resolveOriginOverrideArgs(
+        array $allowedOrigins,
+        bool $allowSubdomains,
+        array $securedRpIds,
+    ): array {
+        if ($allowedOrigins !== []) {
+            return [$allowedOrigins, $allowSubdomains];
+        }
+
+        if ($securedRpIds !== []) {
+            return [$securedRpIds, $allowSubdomains];
+        }
+
+        return [null, false];
     }
 }

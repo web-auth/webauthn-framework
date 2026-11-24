@@ -33,6 +33,7 @@ final readonly class SessionStorage implements OptionsStorage
         $session->set($key, [
             'options' => $item->getPublicKeyCredentialOptions(),
             'userEntity' => $item->getPublicKeyCredentialUserEntity(),
+            'ceremonyOrigin' => $item->getCeremonyOrigin(),
             'scope' => $item->getScope(),
         ]);
     }
@@ -51,6 +52,7 @@ final readonly class SessionStorage implements OptionsStorage
 
         $publicKeyCredentialRequestOptions = $sessionValue['options'];
         $userEntity = $sessionValue['userEntity'];
+        $ceremonyOrigin = $sessionValue['ceremonyOrigin'] ?? null;
         $scope = $sessionValue['scope'] ?? null;
 
         if (! $publicKeyCredentialRequestOptions instanceof PublicKeyCredentialOptions) {
@@ -63,6 +65,10 @@ final readonly class SessionStorage implements OptionsStorage
             throw new BadRequestHttpException('No valid options scope available for this session.');
         }
 
-        return Item::create($publicKeyCredentialRequestOptions, $userEntity)->withScope($scope);
+        is_string($ceremonyOrigin) || $ceremonyOrigin === null || throw new BadRequestHttpException(
+            'No valid ceremony origin available for this session.'
+        );
+
+        return Item::create($publicKeyCredentialRequestOptions, $userEntity, $ceremonyOrigin)->withScope($scope);
     }
 }

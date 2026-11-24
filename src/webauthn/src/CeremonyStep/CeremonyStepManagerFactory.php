@@ -6,17 +6,23 @@ namespace Webauthn\CeremonyStep;
 
 use Cose\Algorithm\Manager;
 use Cose\Algorithm\Signature\ECDSA\ES256;
+use Cose\Algorithm\Signature\FullySpecified\ESP256;
 use Cose\Algorithm\Signature\RSA\RS256;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
+use Webauthn\ClientDataCollector\ClientDataCollectorManager;
 use Webauthn\Counter\CounterChecker;
 use Webauthn\Counter\ThrowExceptionIfInvalid;
+use Webauthn\Event\CanDispatchEvents;
+use Webauthn\Event\NullEventDispatcher;
 use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
+use Webauthn\SecurePaymentConfirmation\BrowserBoundSignatureVerifier;
 
-final class CeremonyStepManagerFactory
+final class CeremonyStepManagerFactory implements CanDispatchEvents
 {
     private CounterChecker $counterChecker;
 
@@ -27,6 +33,13 @@ final class CeremonyStepManagerFactory
     private null|StatusReportRepository $statusReportRepository = null;
 
     private null|CertificateChainValidator $certificateChainValidator = null;
+
+    private bool $requireStatement = true;
+
+    /**
+     * @var string[]
+     */
+    private array $enterpriseAttestationTrustAnchors = [];
 
     private null|TopOriginValidator $topOriginValidator = null;
 
@@ -46,19 +59,32 @@ final class CeremonyStepManagerFactory
 
     private ExtensionOutputCheckerHandler $extensionOutputCheckerHandler;
 
+    private null|ClientDataCollectorManager $clientDataCollectorManager = null;
+
+    private EventDispatcherInterface $eventDispatcher;
+
     public function __construct()
     {
         $this->counterChecker = new ThrowExceptionIfInvalid();
-        $this->algorithmManager = Manager::create()->add(ES256::create(), RS256::create());
+        $this->algorithmManager = Manager::create()->add(ES256::create(), ESP256::create(), RS256::create());
         $this->attestationStatementSupportManager = new AttestationStatementSupportManager([
             new NoneAttestationStatementSupport(),
         ]);
         $this->extensionOutputCheckerHandler = new ExtensionOutputCheckerHandler();
+        $this->eventDispatcher = new NullEventDispatcher();
     }
 
     public function setCounterChecker(CounterChecker $counterChecker): void
     {
         $this->counterChecker = $counterChecker;
+    }
+
+    /**
+     * The creation ceremonies built afterwards dispatch the events of {@see CheckMetadataStatement} with it.
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): void
+    {
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -84,6 +110,11 @@ final class CeremonyStepManagerFactory
         $this->extensionOutputCheckerHandler = $extensionOutputCheckerHandler;
     }
 
+    public function setClientDataCollectorManager(ClientDataCollectorManager $clientDataCollectorManager): void
+    {
+        $this->clientDataCollectorManager = $clientDataCollectorManager;
+    }
+
     public function setAttestationStatementSupportManager(
         AttestationStatementSupportManager $attestationStatementSupportManager
     ): void {
@@ -95,14 +126,31 @@ final class CeremonyStepManagerFactory
         $this->algorithmManager = $algorithmManager;
     }
 
+    /**
+     * @see CheckMetadataStatement::enableMetadataStatementSupport()
+     */
     public function enableMetadataStatementSupport(
         MetadataStatementRepository $metadataStatementRepository,
         StatusReportRepository $statusReportRepository,
-        CertificateChainValidator $certificateChainValidator
+        CertificateChainValidator $certificateChainValidator,
+        bool $requireStatement = true,
     ): void {
         $this->metadataStatementRepository = $metadataStatementRepository;
         $this->statusReportRepository = $statusReportRepository;
         $this->certificateChainValidator = $certificateChainValidator;
+        $this->requireStatement = $requireStatement;
+    }
+
+    /**
+     * Reset Metadata Statement support back to disabled. Useful when cloning a
+     * globally-configured factory to scope a single ceremony out of the
+     * metadata pipeline.
+     */
+    public function disableMetadataStatementSupport(): void
+    {
+        $this->metadataStatementRepository = null;
+        $this->statusReportRepository = null;
+        $this->certificateChainValidator = null;
     }
 
     public function enableCertificateChainValidator(CertificateChainValidator $certificateChainValidator): void
@@ -110,26 +158,47 @@ final class CeremonyStepManagerFactory
         $this->certificateChainValidator = $certificateChainValidator;
     }
 
+    /**
+     * @param string[] $trustAnchors
+     *
+     * @see CheckMetadataStatement::setEnterpriseAttestationTrustAnchors()
+     */
+    public function setEnterpriseAttestationTrustAnchors(array $trustAnchors): void
+    {
+        $this->enterpriseAttestationTrustAnchors = $trustAnchors;
+    }
+
     public function enableTopOriginValidator(TopOriginValidator $topOriginValidator): void
     {
         $this->topOriginValidator = $topOriginValidator;
     }
 
-    public function requestCeremony(): CeremonyStepManager
+    /**
+     * Reset the top-origin validator back to disabled. Symmetric of
+     * {@see self::enableTopOriginValidator()}, useful when cloning a
+     * globally-configured factory to scope a single ceremony out of
+     * cross-origin top-origin validation.
+     */
+    public function disableTopOriginValidator(): void
     {
+        $this->topOriginValidator = null;
+    }
+
+    /**
+     * @param null|string[] $allowedOriginsOverride Per-call override of {@see self::setAllowedOrigins()}.
+     *                                              Pass `null` to fall back to whatever was set on the factory.
+     */
+    public function requestCeremony(
+        ?array $allowedOriginsOverride = null,
+        bool $allowSubdomainsOverride = false,
+    ): CeremonyStepManager {
         /* @see https://www.w3.org/TR/webauthn-3/#sctn-verifying-assertion */
         return new CeremonyStepManager([
             new CheckAllowedCredentialList(),
             new CheckUserHandle(),
-            new CheckClientDataCollectorType(),
+            new CheckClientDataCollectorType($this->clientDataCollectorManager),
             new CheckChallenge(),
-            $this->allowedOrigins === null ? new CheckOrigin(
-                $this->securedRelyingPartyId ?? []
-            ) : new CheckAllowedOrigins(
-                $this->allowedOrigins,
-                $this->allowSubdomains,
-                $this->securedRelyingPartyId ?? []
-            ),
+            $this->buildOriginCheck($allowedOriginsOverride, $allowSubdomainsOverride),
             new CheckTopOrigin($this->topOriginValidator),
             new CheckRelyingPartyIdIdHash(),
             new CheckUserWasPresent(),
@@ -137,14 +206,20 @@ final class CeremonyStepManagerFactory
             new CheckBackupBitsAreConsistent(),
             new CheckExtensions($this->extensionOutputCheckerHandler),
             new CheckSignature($this->algorithmManager),
+            new CheckBrowserBoundSignature(new BrowserBoundSignatureVerifier($this->algorithmManager)),
             new CheckBackupEligibilityIsUnchanged(),
             new CheckCounter($this->counterChecker),
         ]);
     }
 
-    public function creationCeremony(): CeremonyStepManager
-    {
-        return $this->buildCreationCeremony(true);
+    /**
+     * @param null|string[] $allowedOriginsOverride Per-call override of {@see self::setAllowedOrigins()}.
+     */
+    public function creationCeremony(
+        ?array $allowedOriginsOverride = null,
+        bool $allowSubdomainsOverride = false,
+    ): CeremonyStepManager {
+        return $this->buildCreationCeremony(true, $allowedOriginsOverride, $allowSubdomainsOverride);
     }
 
     /**
@@ -153,17 +228,28 @@ final class CeremonyStepManagerFactory
      * Use this when creating credentials with mediation: 'conditional',
      * where user presence may be false after password authentication.
      *
+     * @param null|string[] $allowedOriginsOverride Per-call override of {@see self::setAllowedOrigins()}.
+     *
      * @see https://github.com/w3c/webauthn/wiki/Explainer:-Conditional-Create
      * @see https://github.com/web-auth/webauthn-framework/issues/719
      */
-    public function conditionalCreateCeremony(): CeremonyStepManager
-    {
-        return $this->buildCreationCeremony(false);
+    public function conditionalCreateCeremony(
+        ?array $allowedOriginsOverride = null,
+        bool $allowSubdomainsOverride = false,
+    ): CeremonyStepManager {
+        return $this->buildCreationCeremony(false, $allowedOriginsOverride, $allowSubdomainsOverride);
     }
 
-    private function buildCreationCeremony(bool $requireUserPresence): CeremonyStepManager
-    {
+    /**
+     * @param null|string[] $allowedOriginsOverride
+     */
+    private function buildCreationCeremony(
+        bool $requireUserPresence,
+        ?array $allowedOriginsOverride,
+        bool $allowSubdomainsOverride,
+    ): CeremonyStepManager {
         $metadataStatementChecker = new CheckMetadataStatement();
+        $metadataStatementChecker->setEventDispatcher($this->eventDispatcher);
         if ($this->certificateChainValidator !== null) {
             $metadataStatementChecker->enableCertificateChainValidator($this->certificateChainValidator);
         }
@@ -172,20 +258,16 @@ final class CeremonyStepManagerFactory
                 $this->metadataStatementRepository,
                 $this->statusReportRepository,
                 $this->certificateChainValidator,
+                $this->requireStatement,
             );
         }
+        $metadataStatementChecker->setEnterpriseAttestationTrustAnchors($this->enterpriseAttestationTrustAnchors);
 
         /* @see https://www.w3.org/TR/webauthn-3/#sctn-registering-a-new-credential */
         return new CeremonyStepManager([
-            new CheckClientDataCollectorType(),
+            new CheckClientDataCollectorType($this->clientDataCollectorManager),
             new CheckChallenge(),
-            $this->allowedOrigins === null ? new CheckOrigin(
-                $this->securedRelyingPartyId ?? []
-            ) : new CheckAllowedOrigins(
-                $this->allowedOrigins,
-                $this->allowSubdomains,
-                $this->securedRelyingPartyId ?? []
-            ),
+            $this->buildOriginCheck($allowedOriginsOverride, $allowSubdomainsOverride),
             new CheckTopOrigin($this->topOriginValidator),
             new CheckRelyingPartyIdIdHash(),
             new CheckUserWasPresent($requireUserPresence),
@@ -194,9 +276,36 @@ final class CeremonyStepManagerFactory
             new CheckAlgorithm(),
             new CheckExtensions($this->extensionOutputCheckerHandler),
             new CheckAttestationFormatIsKnownAndValid($this->attestationStatementSupportManager),
+            new CheckBrowserBoundSignature(new BrowserBoundSignatureVerifier($this->algorithmManager)),
             new CheckHasAttestedCredentialData(),
             $metadataStatementChecker,
             new CheckCredentialId(),
         ]);
+    }
+
+    /**
+     * @param null|string[] $allowedOriginsOverride
+     */
+    private function buildOriginCheck(
+        ?array $allowedOriginsOverride,
+        bool $allowSubdomainsOverride,
+    ): CheckOrigin|CheckAllowedOrigins {
+        if ($allowedOriginsOverride !== null) {
+            return new CheckAllowedOrigins(
+                $allowedOriginsOverride,
+                $allowSubdomainsOverride,
+                $this->securedRelyingPartyId ?? [],
+            );
+        }
+
+        if ($this->allowedOrigins === null) {
+            return new CheckOrigin($this->securedRelyingPartyId ?? []);
+        }
+
+        return new CheckAllowedOrigins(
+            $this->allowedOrigins,
+            $this->allowSubdomains,
+            $this->securedRelyingPartyId ?? [],
+        );
     }
 }

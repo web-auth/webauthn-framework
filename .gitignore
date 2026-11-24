@@ -14,3 +14,4 @@ yarn-error.log
 /.ci-tools/infection.txt
 /package-lock.json
 .grepai/
+.claude/

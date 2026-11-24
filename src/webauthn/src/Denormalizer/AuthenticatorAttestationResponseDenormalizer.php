@@ -13,6 +13,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Webauthn\AttestationStatement\AttestationObject;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\CollectedClientData;
 use Webauthn\Exception\InvalidDataException;
@@ -62,7 +63,18 @@ final class AuthenticatorAttestationResponseDenormalizer implements Denormalizer
             $clientDataJSON,
             $attestationObject,
             $data['transports'] ?? [],
+            self::clientExtensionResults($context),
         );
+    }
+
+    /**
+     * @param array<string, mixed> $context
+     */
+    private static function clientExtensionResults(array $context): null|AuthenticationExtensions
+    {
+        $clientExtensionResults = $context[PublicKeyCredentialDenormalizer::CLIENT_EXTENSION_RESULTS] ?? null;
+
+        return $clientExtensionResults instanceof AuthenticationExtensions ? $clientExtensionResults : null;
     }
 
     public function supportsDenormalization(

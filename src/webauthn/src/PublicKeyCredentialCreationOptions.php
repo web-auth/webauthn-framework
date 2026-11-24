@@ -6,6 +6,7 @@ namespace Webauthn;
 
 use function in_array;
 use InvalidArgumentException;
+use function is_string;
 use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Exception\InvalidDataException;
 
@@ -53,6 +54,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
      * @param PublicKeyCredentialDescriptor[] $excludeCredentials
      * @param null|positive-int $timeout
      * @param string[] $hints
+     * @param string[] $attestationFormats RP-preferred attestation statement formats, in priority order (WebAuthn L3 §5.4).
      */
     public function __construct(
         public readonly PublicKeyCredentialRpEntity $rp,
@@ -66,6 +68,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         null|AuthenticationExtensions $extensions = null,
         array $hints = [],
         null|string $mediation = null,
+        public array $attestationFormats = [],
     ) {
         foreach ($pubKeyCredParams as $pubKeyCredParam) {
             $pubKeyCredParam instanceof PublicKeyCredentialParameters || throw new InvalidArgumentException(
@@ -75,6 +78,11 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         foreach ($excludeCredentials as $excludeCredential) {
             $excludeCredential instanceof PublicKeyCredentialDescriptor || throw new InvalidArgumentException(
                 'Invalid type for $excludeCredentials'
+            );
+        }
+        foreach ($attestationFormats as $attestationFormat) {
+            is_string($attestationFormat) || throw new InvalidArgumentException(
+                'Invalid type for $attestationFormats: each entry must be a string'
             );
         }
         in_array($attestation, self::ATTESTATION_CONVEYANCE_PREFERENCES, true) || throw InvalidDataException::create(
@@ -96,6 +104,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
      * @param PublicKeyCredentialDescriptor[] $excludeCredentials
      * @param null|positive-int $timeout
      * @param string[] $hints
+     * @param string[] $attestationFormats
      */
     public static function create(
         PublicKeyCredentialRpEntity $rp,
@@ -109,6 +118,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
         null|AuthenticationExtensions $extensions = null,
         array $hints = [],
         null|string $mediation = null,
+        array $attestationFormats = [],
     ): self {
         return new self(
             $rp,
@@ -122,6 +132,7 @@ final class PublicKeyCredentialCreationOptions extends PublicKeyCredentialOption
             $extensions,
             $hints,
             $mediation,
+            $attestationFormats,
         );
     }
 }

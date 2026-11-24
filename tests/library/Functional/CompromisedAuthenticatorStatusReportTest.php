@@ -9,12 +9,15 @@ use Cose\Algorithm\Signature\ECDSA\ES256;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
+use Webauthn\Event\CompromisedAuthenticatorDetected;
 use Webauthn\Exception\AuthenticatorResponseVerificationException;
 use Webauthn\MetadataService\CertificateChain\PhpCertificateChainValidator;
 use Webauthn\MetadataService\Service\LocalResourceMetadataService;
@@ -28,8 +31,9 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 /**
  * The status reports of an authenticator model decide its registration wherever the flagging report sits in the
- * list. Metadata support is enabled, a direct attestation is requested, and the registration is the packed one of a
- * Security Key by Yubico recorded in PackedAttestationStatementTest.
+ * list, unless the application admits the flagged model (issue #1002). Metadata support is enabled, a direct
+ * attestation is requested, and the registration is the packed one of a Security Key by Yubico recorded in
+ * PackedAttestationStatementTest.
  *
  * @internal
  */
@@ -116,6 +120,84 @@ final class CompromisedAuthenticatorStatusReportTest extends TestCase
         static::assertSame(self::YUBICO_SECURITY_KEY_AAGUID, $credentialRecord->aaguid->toRfc4122());
     }
 
+    /**
+     * @param StatusReport[] $statusReports
+     */
+    #[Test]
+    #[DataProvider('flaggedStatusReports')]
+    public function theApplicationCanAdmitAFlaggedAuthenticatorModel(array $statusReports): void
+    {
+        $decisions = [];
+        $eventDispatcher = self::eventDispatcher($decisions, true);
+
+        $credentialRecord = self::validatorWithStatusReports($statusReports, $eventDispatcher)->check(
+            self::registrationFromYubicoSecurityKey()->response,
+            self::creationOptions(),
+            'localhost'
+        );
+
+        static::assertCount(1, $decisions);
+        static::assertSame($credentialRecord, $decisions[0]->credentialRecord);
+        static::assertSame($statusReports, $decisions[0]->statusReports);
+        static::assertNotSame([], $decisions[0]->compromisedStatusReports());
+    }
+
+    /**
+     * @param StatusReport[] $statusReports
+     */
+    #[Test]
+    #[DataProvider('flaggedStatusReports')]
+    public function aFlaggedAuthenticatorModelCannotRegisterWhenTheApplicationDoesNotAdmitIt(array $statusReports): void
+    {
+        $decisions = [];
+        $validator = self::validatorWithStatusReports($statusReports, self::eventDispatcher($decisions, false));
+
+        try {
+            $validator->check(self::registrationFromYubicoSecurityKey()->response, self::creationOptions(), 'localhost');
+            static::fail('The flagged authenticator model should have been refused.');
+        } catch (AuthenticatorResponseVerificationException $exception) {
+            static::assertSame('The authenticator is compromised and cannot be used', $exception->getMessage());
+        }
+        static::assertCount(1, $decisions);
+    }
+
+    /**
+     * @param StatusReport[] $statusReports
+     */
+    #[Test]
+    #[DataProvider('statusReportsInGoodStanding')]
+    public function theApplicationIsNotAskedAboutAnAuthenticatorModelInGoodStanding(array $statusReports): void
+    {
+        $decisions = [];
+
+        self::validatorWithStatusReports($statusReports, self::eventDispatcher($decisions, false))->check(
+            self::registrationFromYubicoSecurityKey()->response,
+            self::creationOptions(),
+            'localhost'
+        );
+
+        static::assertSame([], $decisions);
+    }
+
+    /**
+     * @param CompromisedAuthenticatorDetected[] $decisions
+     */
+    private static function eventDispatcher(array &$decisions, bool $admit): EventDispatcherInterface
+    {
+        $eventDispatcher = new EventDispatcher();
+        $eventDispatcher->addListener(
+            CompromisedAuthenticatorDetected::class,
+            static function (CompromisedAuthenticatorDetected $event) use (&$decisions, $admit): void {
+                if ($admit) {
+                    $event->admit();
+                }
+                $decisions[] = $event;
+            }
+        );
+
+        return $eventDispatcher;
+    }
+
     private static function report(string $status, string $effectiveDate): StatusReport
     {
         return StatusReport::create($status, $effectiveDate, null, null, null, null, null, null);
@@ -124,8 +206,10 @@ final class CompromisedAuthenticatorStatusReportTest extends TestCase
     /**
      * @param StatusReport[] $statusReports
      */
-    private static function validatorWithStatusReports(array $statusReports): AuthenticatorAttestationResponseValidator
-    {
+    private static function validatorWithStatusReports(
+        array $statusReports,
+        ?EventDispatcherInterface $eventDispatcher = null
+    ): AuthenticatorAttestationResponseValidator {
         $statusReportRepository = new class([
             self::YUBICO_SECURITY_KEY_AAGUID => $statusReports,
         ]) implements StatusReportRepositoryInterface {
@@ -154,6 +238,9 @@ final class CompromisedAuthenticatorStatusReportTest extends TestCase
             $statusReportRepository,
             PhpCertificateChainValidator::create(new MockHttpClient())
         );
+        if ($eventDispatcher !== null) {
+            $factory->setEventDispatcher($eventDispatcher);
+        }
 
         return AuthenticatorAttestationResponseValidator::create($factory->creationCeremony());
     }

@@ -38,6 +38,10 @@ final readonly class AssertionResponseController
 
     public function __invoke(Request $request): Response
     {
+        $publicKeyCredential = null;
+        $publicKeyCredentialRequestOptions = null;
+        $userEntity = null;
+
         try {
             $format = $request->getContentTypeFormat();
             $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
@@ -75,7 +79,12 @@ final readonly class AssertionResponseController
                 $request->getHost(),
                 $userEntity?->id,
             );
-            return $this->successHandler->onSuccess($request);
+            return $this->successHandler->onSuccess(
+                $request,
+                $publicKeyCredential,
+                $publicKeyCredentialRequestOptions,
+                $userEntity
+            );
         } catch (Throwable $throwable) {
             $this->logger->error('An error occurred during the assertion ceremony', [
                 'exception' => $throwable,
@@ -86,7 +95,13 @@ final readonly class AssertionResponseController
                     new AuthenticationException($throwable->getMessage(), $throwable->getCode(), $throwable)
                 );
             }
-            return $this->failureHandler->onFailure($request, $throwable);
+            return $this->failureHandler->onFailure(
+                $request,
+                $throwable,
+                $publicKeyCredential,
+                $publicKeyCredentialRequestOptions,
+                $userEntity,
+            );
         }
     }
 }

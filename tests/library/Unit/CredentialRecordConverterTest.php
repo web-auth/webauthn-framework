@@ -43,7 +43,8 @@ final class CredentialRecordConverterTest extends AbstractTestCase
             ],
             true,
             false,
-            true
+            true,
+            'example.com'
         );
 
         $credentialRecord = CredentialRecordConverter::toCredentialRecord($pkcs);
@@ -64,6 +65,7 @@ final class CredentialRecordConverterTest extends AbstractTestCase
         static::assertTrue($credentialRecord->backupEligible);
         static::assertFalse($credentialRecord->backupStatus);
         static::assertTrue($credentialRecord->uvInitialized);
+        static::assertSame('example.com', $credentialRecord->rpId);
     }
 
     #[Test]
@@ -91,7 +93,8 @@ final class CredentialRecordConverterTest extends AbstractTestCase
             ],
             true,
             false,
-            true
+            true,
+            'example.com'
         );
 
         $pkcs = CredentialRecordConverter::toPublicKeyCredentialSource($credentialRecord);
@@ -112,6 +115,7 @@ final class CredentialRecordConverterTest extends AbstractTestCase
         static::assertTrue($pkcs->backupEligible);
         static::assertFalse($pkcs->backupStatus);
         static::assertTrue($pkcs->uvInitialized);
+        static::assertSame('example.com', $pkcs->rpId);
     }
 
     #[Test]

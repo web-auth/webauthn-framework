@@ -115,7 +115,7 @@ export default class WebauthnController extends Controller {
             if (this.requestResultFieldValue && this.element instanceof HTMLFormElement) {
                 this.element
                     .querySelector(this.requestResultFieldValue)
-                    ?.setAttribute('value', JSON.stringify(authenticatorResponse));
+                    ?.setAttribute('value', JSON.stringify(this._credentialForServer(authenticatorResponse)));
                 this.element.submit();
                 return;
             }
@@ -155,7 +155,7 @@ export default class WebauthnController extends Controller {
             if (this.creationResultFieldValue && this.element instanceof HTMLFormElement) {
                 this.element
                     .querySelector(this.creationResultFieldValue)
-                    ?.setAttribute('value', JSON.stringify(authenticatorResponse));
+                    ?.setAttribute('value', JSON.stringify(this._credentialForServer(authenticatorResponse)));
                 this.element.submit();
                 return;
             }
@@ -276,6 +276,8 @@ export default class WebauthnController extends Controller {
     }
 
     /**
+     * The PRF results are removed from the request body: see `_credentialForServer()`.
+     *
      * @private
      * @param {string} url
      * @param {string} eventPrefix
@@ -285,7 +287,7 @@ export default class WebauthnController extends Controller {
         const attestationResponse = await fetch(url, {
             headers: { ...this.requestHeadersValue },
             method: 'POST',
-            body: JSON.stringify(authenticatorResponse),
+            body: JSON.stringify(this._credentialForServer(authenticatorResponse)),
         });
         if (!attestationResponse.ok) {
             this._dispatchEvent(eventPrefix + 'failure', {});
@@ -322,7 +324,7 @@ export default class WebauthnController extends Controller {
      */
     _processPrfInput(prf) {
         if (prf.eval) {
-            prf.eval = this._importPrfValues(eval);
+            prf.eval = this._importPrfValues(prf.eval);
         }
 
         if (prf.evalByCredential) {
@@ -340,30 +342,42 @@ export default class WebauthnController extends Controller {
      * @returns {{ first: ArrayBuffer, second?: ArrayBuffer }}
      */
     _importPrfValues(values) {
-        values.first = base64URLStringToBuffer(values.first);
+        const result = { ...values };
+        result.first = base64URLStringToBuffer(values.first);
         if (values.second) {
-            values.second = base64URLStringToBuffer(values.second);
+            result.second = base64URLStringToBuffer(values.second);
         }
 
-        return values;
+        return result;
     }
 
     /**
+     * The PRF results are encoded as base64url strings for the listeners of the
+     * `webauthn:authenticator:response` event. They never reach the server: see `_credentialForServer()`.
+     *
+     * The Secure Payment Confirmation browser-bound signature, returned at registration and at
+     * authentication, is encoded as a base64url string too: the server verifies it.
+     *
      * @private
      * @template {RegistrationResponseJSON | AuthenticationResponseJSON} T
-     * @param {T} options
+     * @param {T} credential
      * @returns {T}
      */
-    _processExtensionsOutput(options) {
-        if (!options || !options.extensions) {
-            return options;
+    _processExtensionsOutput(credential) {
+        if (!credential || !credential.clientExtensionResults) {
+            return credential;
         }
 
-        if (options.extensions.prf) {
-            options.extensions.prf = this._processPrfOutput(options.extensions.prf);
+        if (credential.clientExtensionResults.prf) {
+            credential.clientExtensionResults.prf = this._processPrfOutput(credential.clientExtensionResults.prf);
         }
 
-        return options;
+        const browserBoundSignature = credential.clientExtensionResults.payment?.browserBoundSignature;
+        if (browserBoundSignature?.signature instanceof ArrayBuffer) {
+            browserBoundSignature.signature = bufferToBase64URLString(browserBoundSignature.signature);
+        }
+
+        return credential;
     }
 
     /**
@@ -372,11 +386,11 @@ export default class WebauthnController extends Controller {
      * @returns {Record<string, any>}
      */
     _processPrfOutput(prf) {
-        if (!prf.result) {
+        if (!prf.results) {
             return prf;
         }
 
-        prf.result = this._exportPrfValues(prf.result);
+        prf.results = this._exportPrfValues(prf.results);
 
         return prf;
     }
@@ -387,11 +401,46 @@ export default class WebauthnController extends Controller {
      * @returns {{ first: string, second?: string }}
      */
     _exportPrfValues(values) {
-        values.first = bufferToBase64URLString(values.first);
+        const result = { ...values };
+        result.first = bufferToBase64URLString(values.first);
         if (values.second) {
-            values.second = bufferToBase64URLString(values.second);
+            result.second = bufferToBase64URLString(values.second);
         }
 
-        return values;
+        return result;
+    }
+
+    /**
+     * Credential to send to the server: the given one without its PRF results.
+     *
+     * The PRF results are secrets derived by the authenticator, typically used to derive a client-side
+     * encryption key that the server must never know. The server does not need them to verify the ceremony,
+     * so they are only exposed to the application through the `webauthn:authenticator:response` event, and
+     * are removed from the request body and from the result field. Non-secret PRF outputs, such as `enabled`,
+     * are kept.
+     *
+     * The given credential is not modified, so listeners that keep a reference to it still read the results.
+     *
+     * @private
+     * @template {RegistrationResponseJSON | AuthenticationResponseJSON} T
+     * @param {T} credential
+     * @returns {T} The credential itself when it carries no PRF results, otherwise a copy without them.
+     */
+    _credentialForServer(credential) {
+        const prf = credential?.clientExtensionResults?.prf;
+        if (prf?.results === undefined) {
+            return credential;
+        }
+
+        const serverPrf = { ...prf };
+        delete serverPrf.results;
+
+        return {
+            ...credential,
+            clientExtensionResults: {
+                ...credential.clientExtensionResults,
+                prf: serverPrf,
+            },
+        };
     }
 }

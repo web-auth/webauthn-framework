@@ -1,0 +1,736 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Webauthn\Tests\Bundle\Unit\Service;
+
+use const JSON_THROW_ON_ERROR;
+use LogicException;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+use RuntimeException;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Validation;
+use Webauthn\AttestationStatement\AttestationStatement;
+use Webauthn\AttestationStatement\AttestationStatementSupportManager;
+use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
+use Webauthn\AuthenticationExtensions\AuthenticationExtension;
+use Webauthn\AuthenticatorSelectionCriteria;
+use Webauthn\Bundle\Policy\ClientOverridePolicy;
+use Webauthn\Bundle\Repository\CredentialRecordRepositoryInterface;
+use Webauthn\Bundle\Security\Storage\OptionsStorage;
+use Webauthn\Bundle\Service\AbstractWebauthnOptionsBuilder;
+use Webauthn\Bundle\Service\WebauthnOptionsResponse;
+use Webauthn\CredentialRecord;
+use Webauthn\Denormalizer\WebauthnSerializerFactory;
+use Webauthn\FakeCredentialGenerator;
+use Webauthn\PublicKeyCredentialCreationOptions;
+use Webauthn\PublicKeyCredentialDescriptor;
+use Webauthn\PublicKeyCredentialRequestOptions;
+use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\Tests\Bundle\Unit\Service\Fixture\FixedUserEntityGuesser;
+use Webauthn\Tests\Bundle\Unit\Service\Fixture\InMemoryCredentialRepository;
+use Webauthn\Tests\Bundle\Unit\Service\Fixture\InMemoryOptionsStorage;
+use Webauthn\TrustPath\EmptyTrustPath;
+
+/**
+ * @internal
+ */
+final class WebauthnOptionsResponseTest extends TestCase
+{
+    #[Test]
+    public function forCreationProducesOptionsWithSensibleDefaultsAndStoresThem(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+
+        $response = $this->helper(storage: $storage)
+            ->forCreation('example.com', $userEntity)
+            ->build($this->jsonRequest());
+
+        $stored = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertInstanceOf(PublicKeyCredentialCreationOptions::class, $stored);
+        static::assertSame('example.com', $stored->rp->id);
+        static::assertSame('user-handle', $stored->user->id);
+        static::assertNotEmpty($stored->pubKeyCredParams, 'A baseline algorithm list is set by default.');
+        static::assertSame('public-key', $stored->pubKeyCredParams[0]->type);
+
+        $payload = json_decode($response->getContent() ?: '', true, flags: JSON_THROW_ON_ERROR);
+        static::assertSame('example.com', $payload['rp']['id']);
+    }
+
+    #[Test]
+    public function forCreationAcceptsAGuesserResolvedAtBuildTime(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+
+        $this->helper(storage: $storage)
+            ->forCreation('example.com', new FixedUserEntityGuesser($userEntity))
+            ->build($this->jsonRequest());
+
+        static::assertSame('user-handle', $storage->last()->getPublicKeyCredentialOptions()->user->id);
+    }
+
+    #[Test]
+    public function forCreationOverridesAreIgnoredUntilTheClientOverridePolicyIsAttached(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+
+        $this->helper(storage: $storage)
+            ->forCreation('example.com', $userEntity)
+            ->withAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE)
+            ->build($this->jsonRequest(json_encode([
+                'attestation' => PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
+            ], JSON_THROW_ON_ERROR)));
+
+        static::assertSame(
+            PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
+            $storage->last()
+                ->getPublicKeyCredentialOptions()
+                ->attestation,
+        );
+    }
+
+    #[Test]
+    public function forCreationWithClientOverridesAppliesAllowedFields(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+
+        $this->helper(storage: $storage)
+            ->forCreation('example.com', $userEntity)
+            ->withAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE)
+            ->withClientOverrides(new ClientOverridePolicy([
+                'attestation_conveyance' => [
+                    'enabled' => true,
+                    'allowed_values' => [
+                        PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
+                        PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
+                    ],
+                ],
+            ]))
+            ->build($this->jsonRequest(json_encode([
+                'attestation' => PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
+            ], JSON_THROW_ON_ERROR)));
+
+        static::assertSame(
+            PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
+            $storage->last()
+                ->getPublicKeyCredentialOptions()
+                ->attestation,
+        );
+    }
+
+    /**
+     * @return iterable<string, array{string, ?string, string, ?string}>
+     */
+    public static function creationRequestsOverridingOneMember(): iterable
+    {
+        yield 'authenticator attachment' => [
+            '{"authenticatorAttachment": "cross-platform"}',
+            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM,
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
+        ];
+        yield 'resident key' => [
+            '{"residentKey": "discouraged"}',
+            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_DISCOURAGED,
+        ];
+        yield 'user verification, not overridable' => [
+            '{"userVerification": "discouraged"}',
+            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED,
+        ];
+    }
+
+    /**
+     * Overriding one member of the authenticator selection criteria must not reset the others: before the fix, the
+     * criteria were rebuilt from the client values alone and user verification fell back to "preferred"
+     * (GHSA-2989-5cjp-qc2p).
+     */
+    #[Test]
+    #[DataProvider('creationRequestsOverridingOneMember')]
+    public function forCreationClientOverridesOnlyChangeTheMembersTheyCarry(
+        string $body,
+        ?string $expectedAuthenticatorAttachment,
+        string $expectedUserVerification,
+        ?string $expectedResidentKey,
+    ): void {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper($storage)
+            ->forCreation('example.com', PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'))
+            ->withAuthenticatorSelectionCriteria(self::serverCriteria())
+            ->withClientOverrides(new ClientOverridePolicy([
+                'authenticator_attachment' => [
+                    'enabled' => true,
+                ],
+                'resident_key' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest($body));
+
+        $criteria = self::storedCreationOptions($storage)->authenticatorSelection;
+        static::assertNotNull($criteria);
+        static::assertSame($expectedAuthenticatorAttachment, $criteria->authenticatorAttachment);
+        static::assertSame($expectedUserVerification, $criteria->userVerification);
+        static::assertSame($expectedResidentKey, $criteria->residentKey);
+    }
+
+    #[Test]
+    public function forCreationAppliesAnAllowedUserVerificationOverride(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper($storage)
+            ->forCreation('example.com', PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'))
+            ->withAuthenticatorSelectionCriteria(self::serverCriteria())
+            ->withClientOverrides(new ClientOverridePolicy([
+                'user_verification' => [
+                    'enabled' => true,
+                    'allowed_values' => [
+                        AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+                        AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+                    ],
+                ],
+            ]))
+            ->build($this->jsonRequest('{"userVerification": "preferred"}'));
+
+        $criteria = self::storedCreationOptions($storage)->authenticatorSelection;
+        static::assertNotNull($criteria);
+        static::assertSame(AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM, $criteria->authenticatorAttachment);
+        static::assertSame(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED, $criteria->userVerification);
+        static::assertSame(AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED, $criteria->residentKey);
+    }
+
+    #[Test]
+    public function forCreationKeepsTheServerCriteriaWhenTheClientChangesNoMember(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $serverCriteria = self::serverCriteria();
+
+        $this->helper($storage)
+            ->forCreation('example.com', PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'))
+            ->withAuthenticatorSelectionCriteria($serverCriteria)
+            ->withClientOverrides(new ClientOverridePolicy([
+                'authenticator_attachment' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest('{"userVerification": "discouraged", "authenticatorAttachment": "platform"}'));
+
+        static::assertSame($serverCriteria, self::storedCreationOptions($storage)->authenticatorSelection);
+    }
+
+    #[Test]
+    public function forCreationWithoutServerCriteriaSetsNoneWhenTheClientChangesNoMember(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper($storage)
+            ->forCreation('example.com', PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'))
+            ->withClientOverrides(new ClientOverridePolicy([
+                'authenticator_attachment' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest('{"residentKey": "required"}'));
+
+        static::assertNull(self::storedCreationOptions($storage)->authenticatorSelection);
+    }
+
+    #[Test]
+    public function forCreationWithoutServerCriteriaStartsFromTheWebauthnDefaults(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper($storage)
+            ->forCreation('example.com', PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice'))
+            ->withClientOverrides(new ClientOverridePolicy([
+                'authenticator_attachment' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest('{"authenticatorAttachment": "platform"}'));
+
+        $criteria = self::storedCreationOptions($storage)->authenticatorSelection;
+        static::assertNotNull($criteria);
+        static::assertSame(AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM, $criteria->authenticatorAttachment);
+        static::assertSame(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED, $criteria->userVerification);
+        static::assertNull($criteria->residentKey);
+    }
+
+    #[Test]
+    public function forRequestUserlessProducesEmptyAllowCredentials(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper(storage: $storage)
+            ->forRequest('example.com')
+            ->build($this->jsonRequest());
+
+        $options = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertInstanceOf(PublicKeyCredentialRequestOptions::class, $options);
+        static::assertSame('example.com', $options->rpId);
+        static::assertSame([], $options->allowCredentials);
+    }
+
+    #[Test]
+    public function forRequestDerivesAllowCredentialsFromTheRepositoryWhenAUserIsPassed(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+        $repository = new InMemoryCredentialRepository([$this->record('cred-A'), $this->record('cred-B')]);
+
+        $this->helper(storage: $storage, repository: $repository)
+            ->forRequest('example.com')
+            ->withUser($userEntity)
+            ->build($this->jsonRequest());
+
+        $options = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertCount(2, $options->allowCredentials);
+        static::assertSame('cred-A', $options->allowCredentials[0]->id);
+    }
+
+    #[Test]
+    public function forRequestAcceptsAGuesserAndDerivesTheDescriptorListAtBuildTime(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+        $repository = new InMemoryCredentialRepository([$this->record('cred-A')]);
+
+        $this->helper(storage: $storage, repository: $repository)
+            ->forRequest('example.com')
+            ->withUser(new FixedUserEntityGuesser($userEntity))
+            ->build($this->jsonRequest());
+
+        static::assertCount(1, $storage->last()->getPublicKeyCredentialOptions()->allowCredentials);
+    }
+
+    #[Test]
+    public function forRequestExplicitAllowCredentialsBypassesTheRepository(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+        $repository = new InMemoryCredentialRepository([$this->record('repo-cred')]);
+
+        $this->helper(storage: $storage, repository: $repository)
+            ->forRequest('example.com')
+            ->withUser($userEntity)
+            ->withAllowCredentials([PublicKeyCredentialDescriptor::create('public-key', 'explicit-cred')])
+            ->build($this->jsonRequest());
+
+        $options = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertCount(1, $options->allowCredentials);
+        static::assertSame('explicit-cred', $options->allowCredentials[0]->id);
+    }
+
+    #[Test]
+    public function forRequestUiModeAndAttestationFormatsAndHintsAreCarriedThrough(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper(storage: $storage)
+            ->forRequest('example.com')
+            ->withUiMode(PublicKeyCredentialRequestOptions::UI_MODE_IMMEDIATE)
+            ->withAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT)
+            ->withAttestationFormats(['packed', 'tpm'])
+            ->withHints(['client-device', 'hybrid'])
+            ->build($this->jsonRequest());
+
+        $options = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertInstanceOf(PublicKeyCredentialRequestOptions::class, $options);
+        static::assertSame(PublicKeyCredentialRequestOptions::UI_MODE_IMMEDIATE, $options->uiMode);
+        static::assertSame(['packed', 'tpm'], $options->attestationFormats);
+        static::assertSame(['client-device', 'hybrid'], $options->hints);
+    }
+
+    #[Test]
+    public function forRequestWithClientOverridesAppliesAllowedUserVerification(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper(storage: $storage)
+            ->forRequest('example.com')
+            ->withUserVerification(AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED)
+            ->withClientOverrides(new ClientOverridePolicy([
+                'user_verification' => [
+                    'enabled' => true,
+                    'allowed_values' => [
+                        AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED,
+                        AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+                    ],
+                ],
+            ]))
+            ->build($this->jsonRequest(json_encode([
+                'userVerification' => AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            ], JSON_THROW_ON_ERROR)));
+
+        static::assertSame(
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            $storage->last()
+                ->getPublicKeyCredentialOptions()
+                ->userVerification,
+        );
+    }
+
+    #[Test]
+    public function forRequestKeepsTheServerExtensionsWhenTheClientSendsEmptyExtensions(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $payment = AuthenticationExtension::create('payment', [
+            'isPayment' => true,
+            'rpId' => 'example.com',
+        ]);
+
+        $this->helper($storage)
+            ->forRequest('example.com')
+            ->withExtensions([$payment])
+            ->withClientOverrides(new ClientOverridePolicy([
+                'extensions' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest('{"extensions": {}}'));
+
+        $extensions = $storage->last()
+            ->getPublicKeyCredentialOptions()
+            ->extensions;
+        static::assertTrue($extensions->has('payment'));
+        static::assertSame($payment->value, $extensions->get('payment')->value);
+    }
+
+    #[Test]
+    public function forRequestLetsTheClientAddExtensionsToThoseOfTheServer(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $payment = AuthenticationExtension::create('payment', [
+            'isPayment' => true,
+            'rpId' => 'example.com',
+        ]);
+
+        $this->helper($storage)
+            ->forRequest('example.com')
+            ->withExtensions([$payment])
+            ->withClientOverrides(new ClientOverridePolicy([
+                'extensions' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest('{"extensions": {"payment": {"isPayment": false}, "uvm": true}}'));
+
+        $extensions = $storage->last()
+            ->getPublicKeyCredentialOptions()
+            ->extensions;
+        static::assertSame($payment->value, $extensions->get('payment')->value);
+        static::assertTrue($extensions->get('uvm')->value);
+    }
+
+    #[Test]
+    public function forCreationLetsTheClientAddExtensionsButNotReplaceTheServerOnes(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper($storage)
+            ->forCreation('example.com', PublicKeyCredentialUserEntity::create('alice', 'h', 'Alice'))
+            ->withExtensions([AuthenticationExtension::create('credProps', true)])
+            ->withClientOverrides(new ClientOverridePolicy([
+                'extensions' => [
+                    'enabled' => true,
+                ],
+            ]))
+            ->build($this->jsonRequest('{"extensions": {"credProps": false, "uvm": true}}'));
+
+        $extensions = self::storedCreationOptions($storage)->extensions;
+        static::assertTrue($extensions->get('credProps')->value);
+        static::assertTrue($extensions->get('uvm')->value);
+    }
+
+    #[Test]
+    public function builderSettersReturnClonesAndDoNotMutateTheReceiver(): void
+    {
+        $base = $this->helper()
+            ->forCreation('example.com', PublicKeyCredentialUserEntity::create('alice', 'h', 'Alice'));
+
+        $derived = $base->withAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT);
+
+        static::assertNotSame($base, $derived);
+    }
+
+    #[Test]
+    public function forRequestUsesTheFakeCredentialGeneratorWhenAUsernameDoesNotResolveToAUser(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $fakeDescriptor = PublicKeyCredentialDescriptor::create('public-key', 'fake-cred');
+        $generator = new class($fakeDescriptor) implements FakeCredentialGenerator {
+            public function __construct(
+                private readonly PublicKeyCredentialDescriptor $descriptor,
+            ) {
+            }
+
+            public function generate(Request $request, string $username): array
+            {
+                return [$this->descriptor];
+            }
+        };
+
+        $this->helper(storage: $storage, fakeCredentialGenerator: $generator)
+            ->forRequest('example.com')
+            ->build($this->jsonRequest(json_encode([
+                'username' => 'unknown-user',
+            ], JSON_THROW_ON_ERROR)));
+
+        $options = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertCount(1, $options->allowCredentials);
+        static::assertSame('fake-cred', $options->allowCredentials[0]->id);
+    }
+
+    #[Test]
+    public function forRequestProducesEmptyAllowCredentialsWhenTheBodyIsUserlessEvenIfAFakerIsActive(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $generator = new class() implements FakeCredentialGenerator {
+            public function generate(Request $request, string $username): array
+            {
+                throw new RuntimeException('The fake generator MUST NOT be invoked when no username is posted.');
+            }
+        };
+
+        $this->helper(storage: $storage, fakeCredentialGenerator: $generator)
+            ->forRequest('example.com')
+            ->build($this->jsonRequest('{}'));
+
+        static::assertSame([], $storage->last()->getPublicKeyCredentialOptions()->allowCredentials);
+    }
+
+    #[Test]
+    public function withFakeCredentialGeneratorNullOptsOutOfTheAntiEnumerationProtection(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $generator = new class() implements FakeCredentialGenerator {
+            public function generate(Request $request, string $username): array
+            {
+                throw new RuntimeException('The fake generator MUST NOT be invoked once opted out.');
+            }
+        };
+
+        $this->helper(storage: $storage, fakeCredentialGenerator: $generator)
+            ->forRequest('example.com')
+            ->withFakeCredentialGenerator(null)
+            ->build($this->jsonRequest(json_encode([
+                'username' => 'unknown-user',
+            ], JSON_THROW_ON_ERROR)));
+
+        static::assertSame([], $storage->last()->getPublicKeyCredentialOptions()->allowCredentials);
+    }
+
+    /**
+     * Security non-regression for GHSA-pm4w-cq4x-rv8q: a user without any registered credential got an empty
+     * allowCredentials list while an unknown username got fake credentials, which revealed that the account exists.
+     */
+    #[Test]
+    public function forRequestUsesTheFakeCredentialGeneratorWhenTheResolvedUserHasNoCredential(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+        $generator = new class() implements FakeCredentialGenerator {
+            public function generate(Request $request, string $username): array
+            {
+                return [PublicKeyCredentialDescriptor::create('public-key', 'fake-cred-for-' . $username)];
+            }
+        };
+
+        $this->helper($storage, new InMemoryCredentialRepository(), $generator)
+            ->forRequest('example.com')
+            ->withUser($userEntity)
+            ->build($this->jsonRequest(json_encode([
+                'username' => 'alice',
+            ], JSON_THROW_ON_ERROR)));
+
+        $options = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertCount(1, $options->allowCredentials);
+        static::assertSame('fake-cred-for-alice', $options->allowCredentials[0]->id);
+    }
+
+    #[Test]
+    public function forRequestKeepsTheCredentialsOfTheResolvedUserEvenIfAFakerIsActive(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+        $generator = new class() implements FakeCredentialGenerator {
+            public function generate(Request $request, string $username): array
+            {
+                throw new RuntimeException('The fake generator MUST NOT be invoked for a user with credentials.');
+            }
+        };
+
+        $this->helper($storage, new InMemoryCredentialRepository([$this->record('cred-A')]), $generator)
+            ->forRequest('example.com')
+            ->withUser($userEntity)
+            ->build($this->jsonRequest(json_encode([
+                'username' => 'alice',
+            ], JSON_THROW_ON_ERROR)));
+
+        $options = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertCount(1, $options->allowCredentials);
+        static::assertSame('cred-A', $options->allowCredentials[0]->id);
+    }
+
+    #[Test]
+    public function forRequestProducesEmptyAllowCredentialsWhenDerivationIsDisabledEvenIfAFakerIsActive(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $generator = new class() implements FakeCredentialGenerator {
+            public function generate(Request $request, string $username): array
+            {
+                throw new RuntimeException('The fake generator MUST NOT be invoked when derivation is disabled.');
+            }
+        };
+
+        $this->helper($storage, new InMemoryCredentialRepository(), $generator)
+            ->forRequest('example.com')
+            ->withDeriveAllowCredentialsFromUser(false)
+            ->build($this->jsonRequest(json_encode([
+                'username' => 'unknown-user',
+            ], JSON_THROW_ON_ERROR)));
+
+        static::assertSame([], $storage->last()->getPublicKeyCredentialOptions()->allowCredentials);
+    }
+
+    #[Test]
+    public function theOriginTheCeremonyIsStartedOnIsStoredAlongsideTheOptions(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+        $request = new Request(content: '{}', server: [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTPS' => 'on',
+            'HTTP_HOST' => 'portal.example.com',
+        ]);
+
+        $this->helper(storage: $storage)
+            ->forCreation('example.com', $userEntity)
+            ->build($request);
+
+        static::assertSame('https://portal.example.com', $storage->last()->getCeremonyOrigin());
+    }
+
+    #[Test]
+    public function theStoredOptionsAreBoundToTheScopeOfTheHelpersByDefault(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+
+        $this->helper($storage)
+            ->forRequest('example.com')
+            ->build($this->jsonRequest());
+
+        $item = $storage->last();
+        static::assertSame(AbstractWebauthnOptionsBuilder::DEFAULT_SCOPE, $item->getScope());
+        static::assertTrue($item->isRedeemableBy(AbstractWebauthnOptionsBuilder::DEFAULT_SCOPE));
+        static::assertFalse($item->isRedeemableBy('firewall.main'));
+        static::assertFalse($item->isRedeemableBy('controllers.request.default'));
+    }
+
+    #[Test]
+    public function withScopeBindsTheStoredOptionsToTheGivenScope(): void
+    {
+        $storage = new InMemoryOptionsStorage();
+        $userEntity = PublicKeyCredentialUserEntity::create('alice', 'user-handle', 'Alice');
+
+        $this->helper($storage)
+            ->forCreation('example.com', $userEntity)
+            ->withScope('step_up')
+            ->build($this->jsonRequest());
+
+        static::assertSame('step_up', $storage->last()->getScope());
+    }
+
+    #[Test]
+    public function withScopeRefusesAnEmptyScope(): void
+    {
+        $this->expectException(LogicException::class);
+
+        $this->helper()
+            ->forRequest('example.com')
+            ->withScope('');
+    }
+
+    private function helper(
+        ?OptionsStorage $storage = null,
+        ?CredentialRecordRepositoryInterface $repository = null,
+        ?FakeCredentialGenerator $fakeCredentialGenerator = null,
+    ): WebauthnOptionsResponse {
+        return new WebauthnOptionsResponse(
+            $storage ?? new InMemoryOptionsStorage(),
+            $this->serializer(),
+            Validation::createValidator(),
+            $repository ?? new InMemoryCredentialRepository(),
+            $fakeCredentialGenerator,
+        );
+    }
+
+    private static function serverCriteria(): AuthenticatorSelectionCriteria
+    {
+        return AuthenticatorSelectionCriteria::create(
+            AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
+            AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_REQUIRED,
+            AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED
+        );
+    }
+
+    private static function storedCreationOptions(InMemoryOptionsStorage $storage): PublicKeyCredentialCreationOptions
+    {
+        $options = $storage->last()
+            ->getPublicKeyCredentialOptions();
+        static::assertInstanceOf(PublicKeyCredentialCreationOptions::class, $options);
+
+        return $options;
+    }
+
+    private function serializer(): Serializer
+    {
+        $manager = AttestationStatementSupportManager::create();
+        $manager->add(NoneAttestationStatementSupport::create());
+
+        return (new WebauthnSerializerFactory($manager))->create();
+    }
+
+    private function jsonRequest(string $content = '{}'): Request
+    {
+        return new Request(content: $content, server: [
+            'CONTENT_TYPE' => 'application/json',
+        ]);
+    }
+
+    private function record(string $credentialId): CredentialRecord
+    {
+        return new CredentialRecord(
+            publicKeyCredentialId: $credentialId,
+            type: PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+            transports: [],
+            attestationType: AttestationStatement::TYPE_NONE,
+            trustPath: EmptyTrustPath::create(),
+            aaguid: Uuid::fromBinary(str_repeat("\0", 16)),
+            credentialPublicKey: 'pub-key',
+            userHandle: 'user-handle',
+            counter: 0,
+        );
+    }
+}

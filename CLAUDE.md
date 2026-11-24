@@ -192,7 +192,7 @@ The codebase recently underwent a significant refactoring (visible in recent com
 ## PHP Requirements
 
 - PHP >= 8.2
-- Extensions: json, openssl
+- Extensions: openssl
 - Symfony 6.4+ or 7.0+
 
 ## Testing Philosophy

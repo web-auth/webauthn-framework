@@ -57,6 +57,7 @@ export default class RegistrationController extends BaseController {
             optionsUrl: this.optionsUrlValue,
             resultUrl: this.resultUrlValue,
             supportsPlatformAuthenticator: await platformAuthenticatorIsAvailable(),
+            capabilities: await this._getClientCapabilities(),
         });
     }
 
@@ -119,13 +120,28 @@ export default class RegistrationController extends BaseController {
      */
     async _processRegistration(options) {
         try {
-            const processedOptions = this._processExtensionsInput(options);
+            let credential;
+            if (this._supportsNativeJsonHelpers()) {
+                // WebAuthn L3 §5.1.13: the user agent's native parser converts
+                // every standard field, so we don't need _processExtensionsInput.
+                // useAutoRegister maps to mediation: "conditional" per the
+                // SimpleWebAuthn implementation note.
+                credential = await this._nativeCreate(
+                    options,
+                    this.autoRegisterValue ? { mediation: 'conditional' } : {}
+                );
+            } else {
+                const processedOptions = this._processExtensionsInput(options);
+                credential = await startRegistration({
+                    optionsJSON: processedOptions,
+                    useAutoRegister: this.autoRegisterValue,
+                });
+            }
 
-            let credential = await startRegistration({
-                optionsJSON: processedOptions,
-                useAutoRegister: this.autoRegisterValue,
-            });
-
+            // Run on both paths: subclasses (e.g. payment-controller) hook
+            // here for non-WebAuthn-L3 extensions like SPC's `payment` that
+            // PublicKeyCredential.toJSON() may not encode. The base helpers
+            // are idempotent so values already encoded by toJSON() pass through.
             credential = this._processExtensionsOutput(credential);
             this._dispatchEvent('webauthn:registration:credential', { credential });
 
@@ -144,7 +160,7 @@ export default class RegistrationController extends BaseController {
             );
 
             if (verificationResult && this.hasSuccessRedirectUriValue) {
-                window.location.replace(this.successRedirectUriValue);
+                this._redirect(this.successRedirectUriValue);
             }
         } catch (error) {
             // Check if this is a WebAuthn-specific error

@@ -122,6 +122,34 @@ Combined controller for backward compatibility. Handles both registration and au
 > import { WebauthnController } from '@web-auth/webauthn-stimulus';
 > ```
 
+## Signal API helpers (since 5.4)
+
+Three small helpers wrap the [WebAuthn L3 §5.1.10](https://www.w3.org/TR/webauthn-3/#sctn-signal-methods) signal methods. Each one feature-detects the matching `PublicKeyCredential.signalXxx()` static method, silently no-ops on user agents that do not ship it (Firefox, older Safari) and swallows the spec-defined `TypeError` / `SecurityError` so the application flow never breaks.
+
+```javascript
+import {
+    dispatchUnknownCredential,
+    dispatchAllAcceptedCredentials,
+    dispatchCurrentUserDetails,
+    dispatchSignals,
+} from '@web-auth/webauthn-stimulus';
+
+// One-shot dispatch for a single signal:
+await dispatchUnknownCredential({ rpId: 'example.com', credentialId: 'aabbcc' });
+
+// Or dispatch a `signals: [{type, options}]` envelope produced server-side
+// by `Webauthn\Bundle\Service\WebauthnSignalResponse::withSignals(...)`.
+// The Authentication / Registration controllers call this automatically on
+// the success response of the `resultUrl` endpoint, so you usually do not
+// need to invoke it yourself.
+await dispatchSignals(serverResponse);
+```
+
+`AuthenticationController`, `RegistrationController` and `WebauthnController` all auto-pickup the `signals` envelope after a successful verify call. Privacy gates per W3C §14.6.3:
+
+- `dispatchUnknownCredential` is safe to expose to an unauthenticated caller (the credential id is one the caller already presented).
+- `dispatchAllAcceptedCredentials` and `dispatchCurrentUserDetails` carry PII (full credential id list, user handle plus display strings) and MUST only be emitted for an authenticated user.
+
 ## Configuration Values
 
 ### Common Values (all controllers)
@@ -154,18 +182,20 @@ The controllers dispatch custom events on their element. The events bubble, so a
 
 The authentication controller prefixes its events with `webauthn:authentication:`, the registration controller with `webauthn:registration:`.
 
-| Event                     | Detail                                                     | Dispatched                                                   |
-| ------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------ |
-| `<prefix>connect`         | `optionsUrl`, `resultUrl`, `supportsPlatformAuthenticator` | When the controller connects                                 |
-| `<prefix>options:request` | `data`                                                     | Before the options are requested from `optionsUrl`           |
-| `<prefix>options:success` | `options`                                                  | When the options are received                                |
-| `<prefix>options:error`   | `response` or `error`                                      | When the options request fails                               |
-| `<prefix>credential`      | `credential`                                               | When the authenticator answers, before anything is sent      |
-| `<prefix>verify:request`  | `credential`, as it is sent to `resultUrl`                 | Before the credential is sent                                |
-| `<prefix>verify:success`  | `result`                                                   | When `resultUrl` accepts the credential                      |
-| `<prefix>verify:error`    | `response` or `error`                                      | When `resultUrl` refuses the credential or cannot be reached |
-| `<prefix>error`           | `error`, plus `code` and `name` for a WebAuthn error       | When the ceremony fails                                      |
-| `webauthn:unsupported`    | none                                                       | When the ceremony is started in a browser without WebAuthn   |
+| Event                     | Detail                                                                     | Dispatched                                                   |
+| ------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `<prefix>connect`         | `optionsUrl`, `resultUrl`, `supportsPlatformAuthenticator`, `capabilities` | When the controller connects                                 |
+| `<prefix>options:request` | `data`                                                                     | Before the options are requested from `optionsUrl`           |
+| `<prefix>options:success` | `options`                                                                  | When the options are received                                |
+| `<prefix>options:error`   | `response` or `error`                                                      | When the options request fails                               |
+| `<prefix>credential`      | `credential`                                                               | When the authenticator answers, before anything is sent      |
+| `<prefix>verify:request`  | `credential`, as it is sent to `resultUrl`                                 | Before the credential is sent                                |
+| `<prefix>verify:success`  | `result`                                                                   | When `resultUrl` accepts the credential                      |
+| `<prefix>verify:error`    | `response` or `error`                                                      | When `resultUrl` refuses the credential or cannot be reached |
+| `<prefix>error`           | `error`, plus `code` and `name` for a WebAuthn error                       | When the ceremony fails                                      |
+| `webauthn:unsupported`    | none                                                                       | When the ceremony is started in a browser without WebAuthn   |
+
+`capabilities` is the client capability map of `PublicKeyCredential.getClientCapabilities()`. In a browser without that method, it is built from feature detection: `conditionalGet` tells whether conditional mediation is available, and the other capabilities are reported as `false`.
 
 When `submitViaForm` is enabled and the controller has a `result` target, the form is submitted instead of the verify request, so the three `verify` events are not dispatched.
 

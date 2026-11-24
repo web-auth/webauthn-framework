@@ -144,6 +144,8 @@ export default class WebauthnController extends Controller<Element> {
      */
     private _getAssertionResponse;
     /**
+     * The PRF results are removed from the request body: see `_credentialForServer()`.
+     *
      * @private
      * @param {string} url
      * @param {string} eventPrefix
@@ -170,9 +172,12 @@ export default class WebauthnController extends Controller<Element> {
      */
     private _importPrfValues;
     /**
+     * The PRF results are encoded as base64url strings for the listeners of the
+     * `webauthn:authenticator:response` event. They never reach the server: see `_credentialForServer()`.
+     *
      * @private
      * @template {RegistrationResponseJSON | AuthenticationResponseJSON} T
-     * @param {T} options
+     * @param {T} credential
      * @returns {T}
      */
     private _processExtensionsOutput;
@@ -188,6 +193,23 @@ export default class WebauthnController extends Controller<Element> {
      * @returns {{ first: string, second?: string }}
      */
     private _exportPrfValues;
+    /**
+     * Credential to send to the server: the given one without its PRF results.
+     *
+     * The PRF results are secrets derived by the authenticator, typically used to derive a client-side
+     * encryption key that the server must never know. The server does not need them to verify the ceremony,
+     * so they are only exposed to the application through the `webauthn:authenticator:response` event, and
+     * are removed from the request body and from the result field. Non-secret PRF outputs, such as `enabled`,
+     * are kept.
+     *
+     * The given credential is not modified, so listeners that keep a reference to it still read the results.
+     *
+     * @private
+     * @template {RegistrationResponseJSON | AuthenticationResponseJSON} T
+     * @param {T} credential
+     * @returns {T} The credential itself when it carries no PRF results, otherwise a copy without them.
+     */
+    private _credentialForServer;
 }
 export type PublicKeyCredentialCreationOptionsJSON = import("@simplewebauthn/browser").PublicKeyCredentialCreationOptionsJSON;
 export type PublicKeyCredentialRequestOptionsJSON = import("@simplewebauthn/browser").PublicKeyCredentialRequestOptionsJSON;
