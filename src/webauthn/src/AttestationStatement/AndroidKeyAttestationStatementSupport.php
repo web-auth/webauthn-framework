@@ -33,6 +33,7 @@ use Webauthn\Exception\InvalidAttestationStatementException;
 use Webauthn\MetadataService\CertificateChain\CertificateToolbox;
 use Webauthn\StringStream;
 use Webauthn\TrustPath\CertificateTrustPath;
+use Webauthn\Util\CoseAlgorithmIdentifier;
 
 final class AndroidKeyAttestationStatementSupport implements AttestationStatementSupport, CanDispatchEvents
 {
@@ -92,6 +93,10 @@ final class AndroidKeyAttestationStatementSupport implements AttestationStatemen
                 sprintf('The attestation statement value "%s" is missing.', $key)
             );
         }
+        CoseAlgorithmIdentifier::isValid($attStmt['alg']) || throw AttestationStatementLoadingException::create(
+            $attestation,
+            'The attestation statement value "alg" must be an integer.'
+        );
         /** @var array<string> $certificates */
         $certificates = $attStmt['x5c'];
         (is_countable($certificates) ? count(

@@ -30,6 +30,11 @@ final readonly class ClientOverrideRule
     ) {
     }
 
+    /**
+     * Accepts any value the client sends, including `none` for the attestation
+     * conveyance, which waives the attestation the server requests: see
+     * {@see ClientOverridePolicy::fromRules()}.
+     */
     public static function any(): self
     {
         return new self();
