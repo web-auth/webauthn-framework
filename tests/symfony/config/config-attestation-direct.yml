@@ -1,0 +1,5 @@
+webauthn:
+  options_storage: 'Webauthn\Bundle\Security\Storage\SessionStorage'
+  creation_profiles:
+    default:
+      attestation_conveyance: !php/const Webauthn\PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
