@@ -82,6 +82,14 @@ final readonly class ClientOverridePolicy
      * Build a policy from typed {@see ClientOverrideRule} value objects, one
      * per overridable field. Pass `null` (the default) for fields the client
      * must NOT be able to override.
+     *
+     * An `$attestationConveyance` rule that accepts `none`, such as
+     * {@see ClientOverrideRule::any()}, lets the client waive the attestation
+     * the server requests: the attestation statement is then not verified
+     * against the metadata, and the credential record keeps the attestation
+     * type, trust path and AAGUID the authenticator claims. To let the client
+     * ask for more attestation only, use
+     * `ClientOverrideRule::restrictTo(['indirect', 'direct', 'enterprise'])`.
      */
     public static function fromRules(
         ?ClientOverrideRule $userVerification = null,
