@@ -109,7 +109,7 @@ Data persistence is abstracted through repository interfaces:
 - `CredentialRecordRepositoryInterface` - Query credentials by user or credential ID
   - Optional `CanSaveCredentialRecord` interface for persistence operations
 - `PublicKeyCredentialUserEntityRepositoryInterface` - User lookup by username or user handle
-- Implementations: `DoctrineCredentialSourceRepository` (Doctrine), `DummyCredentialRecordRepository` (testing)
+- Implementations: `DummyCredentialRecordRepository` (testing). Applications map their own Doctrine entity and convert it from and to `CredentialRecord`; the bundle only provides the DBAL types (`src/symfony/src/Doctrine/Type/`)
 
 ### Core Data Models
 
@@ -162,7 +162,6 @@ Located in `src/symfony/`:
 
 **Configuration:**
 - Service definitions in `src/symfony/src/Resources/config/`
-- Doctrine mappings in `src/symfony/src/Resources/config/doctrine-mapping/`
 - Bundle configuration via `Configuration.php`
 
 **Security Integration:**
